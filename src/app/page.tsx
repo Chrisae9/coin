@@ -2,18 +2,31 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from 'next/link';
+import { useState } from "react";
 import usePersistentState from "./usePersistentState";
 
-const Coin = ({ side }: { side: "heads" | "tails" | null }) => (
-  <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-full flex items-center justify-center text-5xl sm:text-6xl font-bold text-white bg-yellow-500 shadow-lg">
+const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animationKey: number }) => (
+  <motion.div
+    key={animationKey}
+    className="w-40 h-40 sm:w-56 sm:h-56 rounded-full flex items-center justify-center text-5xl sm:text-6xl font-bold text-white bg-yellow-500 shadow-lg"
+    initial={{ rotateY: 0 }}
+    animate={{ rotateY: 360 }}
+    transition={{ duration: 0.5 }}
+  >
     {side ? (side === "heads" ? "H" : "T") : "?"}
-  </div>
+  </motion.div>
 );
 
-const D20 = ({ result }: { result: number | null }) => (
-  <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-lg flex items-center justify-center text-5xl sm:text-6xl font-bold text-white bg-blue-500 shadow-lg">
+const D20 = ({ result, animationKey }: { result: number | null, animationKey: number }) => (
+  <motion.div
+    key={animationKey}
+    className="w-40 h-40 sm:w-56 sm:h-56 rounded-lg flex items-center justify-center text-5xl sm:text-6xl font-bold text-white bg-blue-500 shadow-lg"
+    initial={{ rotate: 0 }}
+    animate={{ rotate: 360 }}
+    transition={{ duration: 0.5 }}
+  >
     {result || "?"}
-  </div>
+  </motion.div>
 );
 
 export default function Home() {
@@ -22,8 +35,10 @@ export default function Home() {
   const [d20Result, setD20Result] = usePersistentState<number | null>('d20Result', null);
   const [lastResult, setLastResult] = usePersistentState<string | number | null>('lastResult', null);
   const [score, setScore] = usePersistentState<{ heads: number; tails: number; d20: Record<number, number> }>('score', { heads: 0, tails: 0, d20: {} });
+  const [animationKey, setAnimationKey] = useState(0);
 
   const handleAction = () => {
+    setAnimationKey(prev => prev + 1);
     let newResult: "heads" | "tails" | number;
 
     if (game === 'coin') {
@@ -66,7 +81,7 @@ export default function Home() {
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.3 }}
             >
-              {game === "coin" ? <Coin side={side} /> : <D20 result={d20Result} />}
+              {game === "coin" ? <Coin side={side} animationKey={animationKey} /> : <D20 result={d20Result} animationKey={animationKey} />}
             </motion.div>
           </AnimatePresence>
         </div>
