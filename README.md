@@ -1,8 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Coin Flip and D20 Roll App
+
+This is a simple web application built with Next.js that allows users to flip a coin or roll a 20-sided die (D20).
+
+## Features
+
+- **Coin Flip:** Get a random result of "Heads" or "Tails".
+- **D20 Roll:** Get a random result from 1 to 20.
+- **Score Tracking:** Keeps track of the number of heads, tails, and individual D20 roll counts.
+- **Persistent State:** Your game state and scores are saved locally.
 
 ## Getting Started
 
-First, run the development server:
+First, clone the repository:
+
+```bash
+git clone <repository-url>
+cd coin
+```
+
+Then, install the dependencies:
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+# or
+bun install
+```
+
+Next, run the development server:
 
 ```bash
 npm run dev
@@ -15,10 +43,6 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
 

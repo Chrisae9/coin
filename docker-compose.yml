@@ -1,0 +1,19 @@
+services:
+  coin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.coin.rule=Host(`coin.chis.dev`)"
+      - "traefik.http.routers.coin.entrypoints=websecure"
+      - "traefik.http.routers.coin.tls.certresolver=cloudflare"
+      - "traefik.http.services.coin.loadbalancer.server.port=3000"
+      - "traefik.docker.network=public"
+    networks:
+      - public
+
+networks:
+  public:
+    external: true
