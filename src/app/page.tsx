@@ -8,7 +8,7 @@ import usePersistentState from "./usePersistentState";
 const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animationKey: number }) => (
   <motion.div
     key={animationKey}
-    className="w-40 h-40 sm:w-56 sm:h-56 rounded-full flex items-center justify-center text-5xl sm:text-6xl font-bold text-white bg-yellow-500 shadow-lg"
+    className="w-40 h-40 sm:w-56 sm:h-56 rounded-full flex items-center justify-center text-5xl sm:text-6xl font-bold text-black bg-gray-400 shadow-lg"
     initial={{ rotateY: 0 }}
     animate={{ rotateY: 360 }}
     transition={{ duration: 0.5 }}
@@ -20,10 +20,10 @@ const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animatio
 const D20 = ({ result, animationKey }: { result: number | null, animationKey: number }) => (
   <motion.div
     key={animationKey}
-    className="w-40 h-40 sm:w-56 sm:h-56 rounded-lg flex items-center justify-center text-5xl sm:text-6xl font-bold text-white bg-blue-500 shadow-lg"
-    initial={{ rotate: 0 }}
-    animate={{ rotate: 360 }}
-    transition={{ duration: 0.5 }}
+    className="w-40 h-40 sm:w-56 sm:h-56 rounded-lg flex items-center justify-center text-5xl sm:text-6xl font-bold text-white bg-purple-500 shadow-lg"
+    initial={{ scale: 0, rotate: 0 }}
+    animate={{ scale: 1, rotate: 360 }}
+    transition={{ type: "spring", stiffness: 260, damping: 20 }}
   >
     {result || "?"}
   </motion.div>
@@ -66,8 +66,8 @@ export default function Home() {
     <div className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
       <header className="p-4 shadow-md bg-white dark:bg-gray-800">
         <div className="container mx-auto flex justify-center gap-4">
-          <button onClick={() => setGame("coin")} className={`px-4 py-2 rounded-md font-semibold ${game === 'coin' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}>Coin Flip</button>
-          <button onClick={() => setGame("d20")} className={`px-4 py-2 rounded-md font-semibold ${game === 'd20' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}>Roll D20</button>
+          <button onClick={() => setGame("coin")} className={`px-4 py-2 rounded-md font-semibold ${game === 'coin' ? 'bg-gray-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}>Coin Flip</button>
+          <button onClick={() => setGame("d20")} className={`px-4 py-2 rounded-md font-semibold ${game === 'd20' ? 'bg-purple-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}>Roll D20</button>
         </div>
       </header>
 
