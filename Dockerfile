@@ -1,7 +1,7 @@
 # Dockerfile
 
 # 1. Builder stage
-FROM node:20-alpine AS builder
+FROM node:24.4.0-alpine AS builder
 
 WORKDIR /app
 
@@ -20,13 +20,12 @@ FROM node:24.4.0-alpine AS production
 
 WORKDIR /app
 
-# Copy built assets from the builder stage
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# Copy the standalone output
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
 # Expose the port Next.js runs on
 EXPOSE 3000
 
 # The command to start the application
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
