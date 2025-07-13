@@ -89,9 +89,14 @@ export default function Home() {
             </motion.div>
           </AnimatePresence>
         </div>
-        {lastResult && (
+        {game === 'coin' && side && (
             <div className="mb-6 text-xl">
-                Last Result: <span className="font-bold text-indigo-600">{lastResult}</span>
+                Last Flip: <span className="font-bold text-indigo-600">{side}</span>
+            </div>
+        )}
+        {game === 'd20' && d20Result && (
+            <div className="mb-6 text-xl">
+                Last Roll: <span className="font-bold text-indigo-600">{d20Result}</span>
             </div>
         )}
       </main>
