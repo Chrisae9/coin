@@ -8,7 +8,7 @@ import usePersistentState from "./usePersistentState";
 const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animationKey: number }) => (
   <motion.div
     key={animationKey}
-    className="w-40 h-40 sm:w-56 sm:h-56 rounded-full flex items-center justify-center text-5xl sm:text-6xl font-bold text-black bg-gray-400 shadow-lg"
+    className="w-48 h-48 sm:w-64 sm:h-64 rounded-full flex items-center justify-center text-6xl sm:text-7xl font-bold text-gray-800 bg-gray-200 shadow-xl border-4 border-gray-300"
     initial={{ rotateY: 0 }}
     animate={{ rotateY: 360 }}
     transition={{ duration: 0.5 }}
@@ -20,10 +20,11 @@ const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animatio
 const D20 = ({ result, animationKey }: { result: number | null, animationKey: number }) => (
   <motion.div
     key={animationKey}
-    className="w-40 h-40 sm:w-56 sm:h-56 rounded-lg flex items-center justify-center text-5xl sm:text-6xl font-bold text-white bg-purple-500 shadow-lg"
-    initial={{ scale: 0, rotate: 0 }}
-    animate={{ scale: 1, rotate: 360 }}
-    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+    className="w-48 h-48 sm:w-64 sm:h-64 flex items-center justify-center text-6xl sm:text-7xl font-bold text-white bg-indigo-600 shadow-xl"
+    style={{ clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)' }}
+    initial={{ scale: 0, rotate: -15 }}
+    animate={{ scale: 1, rotate: 0 }}
+    transition={{ type: "spring", stiffness: 300, damping: 15 }}
   >
     {result || "?"}
   </motion.div>
@@ -63,16 +64,19 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
-      <header className="p-4 shadow-md bg-white dark:bg-gray-800">
-        <div className="container mx-auto flex justify-center gap-4">
-          <button onClick={() => setGame("coin")} className={`px-4 py-2 rounded-md font-semibold ${game === 'coin' ? 'bg-gray-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}>Coin Flip</button>
-          <button onClick={() => setGame("d20")} className={`px-4 py-2 rounded-md font-semibold ${game === 'd20' ? 'bg-purple-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}>Roll D20</button>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex flex-col font-sans">
+      <header className="py-4 px-6 shadow-md bg-white dark:bg-gray-800">
+        <div className="container mx-auto flex justify-center items-center">
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white mr-6">Game Mode</h1>
+          <div className="flex gap-2 p-1 bg-gray-200 dark:bg-gray-700 rounded-lg">
+            <button onClick={() => setGame("coin")} className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${game === 'coin' ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-white shadow' : 'text-gray-600 dark:text-gray-400'}`}>Coin Flip</button>
+            <button onClick={() => setGame("d20")} className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${game === 'd20' ? 'bg-white dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 shadow' : 'text-gray-600 dark:text-gray-400'}`}>D20 Roll</button>
+          </div>
         </div>
       </header>
 
-      <main className="flex-grow container mx-auto p-4 flex flex-col items-center justify-center text-center">
-        <div className="mb-8">
+      <main className="flex-grow container mx-auto p-6 flex flex-col items-center justify-center text-center">
+        <div className="mb-6 h-64 flex items-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={game}
@@ -86,27 +90,27 @@ export default function Home() {
           </AnimatePresence>
         </div>
         {lastResult && (
-            <div className="mb-4 text-xl">
-                Last Result: <span className="font-bold text-blue-500">{lastResult}</span>
+            <div className="mb-6 text-xl">
+                Last Result: <span className="font-bold text-indigo-600">{lastResult}</span>
             </div>
         )}
       </main>
 
-      <footer className="p-4 bg-white dark:bg-gray-800 shadow-inner sticky bottom-0">
-        <div className="container mx-auto w-full max-w-md">
+      <footer className="p-6 bg-white dark:bg-gray-800 shadow-t">
+        <div className="container mx-auto w-full max-w-sm">
             <button
                 onClick={handleAction}
-                className="w-full px-8 py-4 mb-2 text-lg font-bold text-white bg-green-500 rounded-md hover:bg-green-600 transition-colors"
+                className="w-full px-8 py-4 mb-3 text-lg font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-md"
             >
                 {game === "coin" ? "Flip Coin" : "Roll D20"}
             </button>
-            <div className="flex gap-2">
-                <Link href={{ pathname: '/results', query: { lastResult: lastResult || 'N/A', heads: score.heads, tails: score.tails, d20Scores: JSON.stringify(score.d20) } }} className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-300 rounded-md hover:bg-gray-400 transition-colors dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500">
+            <div className="grid grid-cols-2 gap-3">
+                <Link href={{ pathname: '/results', query: { lastResult: lastResult || 'N/A', heads: score.heads, tails: score.tails, d20Scores: JSON.stringify(score.d20) } }} className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
                     View Results
                 </Link>
                 <button
                     onClick={clearScore}
-                    className="w-full px-4 py-3 text-sm font-medium text-gray-700 bg-gray-300 rounded-md hover:bg-gray-400 transition-colors dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500"
+                    className="w-full px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 >
                     Clear Score
                 </button>
