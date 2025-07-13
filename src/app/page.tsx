@@ -1,9 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import Link from 'next/link';
 import { useState } from "react";
 import usePersistentState from "./usePersistentState";
+import ResultsOverlay from "./ResultsOverlay";
 
 const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animationKey: number }) => (
   <motion.div
@@ -37,6 +37,7 @@ export default function Home() {
   const [lastResult, setLastResult] = usePersistentState<string | number | null>('lastResult', null);
   const [score, setScore] = usePersistentState<{ heads: number; tails: number; d20: Record<number, number> }>('score', { heads: 0, tails: 0, d20: {} });
   const [animationKey, setAnimationKey] = useState(0);
+  const [showResults, setShowResults] = useState(false);
 
   const handleAction = () => {
     setAnimationKey(prev => prev + 1);
@@ -110,9 +111,9 @@ export default function Home() {
                 {game === "coin" ? "Flip Coin" : "Roll D20"}
             </button>
             <div className="grid grid-cols-2 gap-3">
-                <Link href={{ pathname: '/results', query: { lastResult: lastResult || 'N/A', heads: score.heads, tails: score.tails, d20Scores: JSON.stringify(score.d20) } }} className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+                <button onClick={() => setShowResults(true)} className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
                     View Results
-                </Link>
+                </button>
                 <button
                     onClick={clearScore}
                     className="w-full px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
@@ -122,6 +123,16 @@ export default function Home() {
             </div>
         </div>
       </footer>
+
+      {showResults && (
+        <ResultsOverlay
+          lastResult={lastResult}
+          heads={score.heads}
+          tails={score.tails}
+          d20Scores={score.d20}
+          onClose={() => setShowResults(false)}
+        />
+      )}
     </div>
   );
 }

@@ -2,28 +2,22 @@
 
 import { useState, useEffect } from 'react';
 
-type SetValue<T> = (value: T | ((prev: T) => T)) => void;
-
-function usePersistentState<T>(key: string, initialState: T): [T, SetValue<T>] {
-  const [state, setState] = useState<T>(initialState);
+function usePersistentState<T>(key: string, defaultValue: T): [T, (value: T | ((prevState: T) => T)) => void] {
+  const [state, setState] = useState<T>(defaultValue);
 
   useEffect(() => {
-    try {
-      const storedValue = window.localStorage.getItem(key);
-      if (storedValue !== null) {
+    const storedValue = window.localStorage.getItem(key);
+    if (storedValue) {
+      try {
         setState(JSON.parse(storedValue));
+      } catch (error) {
+        console.error("Error parsing JSON from localStorage", error);
       }
-    } catch (error) {
-      console.error('Error reading from localStorage', error);
     }
   }, [key]);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(state));
-    } catch (error) {
-      console.error('Error writing to localStorage', error);
-    }
+    window.localStorage.setItem(key, JSON.stringify(state));
   }, [key, state]);
 
   return [state, setState];
