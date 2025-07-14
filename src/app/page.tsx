@@ -94,7 +94,7 @@ export default function Home() {
 
   // Mobile View
   const mobileView = (
-    <div className="flex flex-col h-dvh">
+    <div className="flex flex-col h-dvh overflow-hidden">
         <header className="py-4 px-6 shadow-md bg-white dark:bg-gray-800">
           <div className="container mx-auto flex justify-center items-center">
             <div className="flex gap-2 p-1 bg-gray-200 dark:bg-gray-700 rounded-lg">
