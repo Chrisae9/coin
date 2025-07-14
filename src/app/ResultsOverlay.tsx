@@ -25,13 +25,15 @@ export default function ResultsOverlay({ lastResult, heads, tails, d20Scores, on
           </h3>
         )}
         
-        <div className="mb-4">
-          <h4 className="text-lg font-semibold mb-2">Coin Flip Score:</h4>
-          <div className="flex justify-around">
-            <p>Heads: <span className="font-bold">{heads}</span></p>
-            <p>Tails: <span className="font-bold">{tails}</span></p>
+        {(heads > 0 || tails > 0) && (
+          <div className="mb-4">
+            <h4 className="text-lg font-semibold mb-2">Coin Flip Score:</h4>
+            <div className="flex justify-around">
+              <p>Heads: <span className="font-bold">{heads}</span></p>
+              <p>Tails: <span className="font-bold">{tails}</span></p>
+            </div>
           </div>
-        </div>
+        )}
 
         {sortedD20Scores.length > 0 && (
           <div>
