@@ -35,7 +35,7 @@ export default function Home() {
   const [side, setSide] = useState<"heads" | "tails" | null>(null);
   const [d20Result, setD20Result] = useState<number | null>(null);
   const [lastResult, setLastResult] = useState<string | number | null>(null);
-  const [score, setScore] = usePersistentState<{ heads: number; tails: number; d20: Record<number, number> }>('score', { heads: 0, tails: 0, d20: {} });
+  const [score, setScore] = useState<{ heads: number; tails: number; d20: Record<number, number> }>({ heads: 0, tails: 0, d20: {} });
   const [animationKey, setAnimationKey] = useState(0);
   const [showResults, setShowResults] = useState(false);
 
