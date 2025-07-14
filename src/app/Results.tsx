@@ -24,7 +24,7 @@ export default function Results({ title, scores, winningCriteria, total }: Resul
     return 'bg-gray-100 dark:bg-gray-700';
   };
 
-  const isBarChart = scores.length > 2;
+  const isBarChart = title === 'D20 Rolls';
 
   const d20ScoresMap = new Map(scores.map(s => [s.label, s.value]));
   const allD20Rolls = Array.from({ length: 20 }, (_, i) => String(i + 1));
