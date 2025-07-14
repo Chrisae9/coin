@@ -3,7 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import usePersistentState from "./usePersistentState";
-import ResultsOverlay from "./ResultsOverlay";
+import Results from "./Results";
+import GamePanel from "./GamePanel";
 
 const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animationKey: number }) => (
   <motion.div
@@ -34,118 +35,182 @@ export default function Home() {
   const [game, setGame] = usePersistentState<"coin" | "d20">('game', "coin");
   const [side, setSide] = useState<"heads" | "tails" | null>(null);
   const [d20Result, setD20Result] = useState<number | null>(null);
-  const [lastResult, setLastResult] = useState<string | number | null>(null);
   const [score, setScore] = useState<{ heads: number; tails: number; d20: Record<number, number> }>({ heads: 0, tails: 0, d20: {} });
   const [animationKey, setAnimationKey] = useState(0);
+  const [d20AnimationKey, setD20AnimationKey] = useState(0);
   const [showResults, setShowResults] = useState(false);
 
   const hasResults = score.heads > 0 || score.tails > 0 || Object.keys(score.d20).length > 0;
 
-  const handleAction = () => {
+  const handleCoinFlip = () => {
     setAnimationKey(prev => prev + 1);
-    let newResult: "heads" | "tails" | number;
+    const randomBuffer = new Uint8Array(1);
+    window.crypto.getRandomValues(randomBuffer);
+    const newSide = randomBuffer[0] < 128 ? "heads" : "tails";
+    setSide(newSide);
+    setScore((prev) => ({ ...prev, [newSide]: prev[newSide] + 1 }));
+  };
 
-    if (game === 'coin') {
-      const randomBuffer = new Uint8Array(1);
-      window.crypto.getRandomValues(randomBuffer);
-      const newSide = randomBuffer[0] < 128 ? "heads" : "tails";
-      setSide(newSide);
-      newResult = newSide;
-      setScore((prev) => ({ ...prev, [newSide]: prev[newSide] + 1 }));
-    } else {
-      const randomValues = new Uint8Array(1);
-      let randomByte;
-      do {
-        window.crypto.getRandomValues(randomValues);
-        randomByte = randomValues[0];
-      } while (randomByte >= 240);
-      const newD20Result = (randomByte % 20) + 1;
-      setD20Result(newD20Result);
-      newResult = newD20Result;
-      setScore((prev) => ({ ...prev, d20: { ...prev.d20, [newD20Result]: (prev.d20[newD20Result] || 0) + 1 } }));
-    }
-    setLastResult(newResult);
+  const handleD20Roll = () => {
+    setD20AnimationKey(prev => prev + 1);
+    const randomValues = new Uint8Array(1);
+    let randomByte;
+    do {
+      window.crypto.getRandomValues(randomValues);
+      randomByte = randomValues[0];
+    } while (randomByte >= 240);
+    const newD20Result = (randomByte % 20) + 1;
+    setD20Result(newD20Result);
+    setScore((prev) => ({ ...prev, d20: { ...prev.d20, [newD20Result]: (prev.d20[newD20Result] || 0) + 1 } }));
   };
 
   const clearScore = () => {
     setScore({ heads: 0, tails: 0, d20: {} });
     setSide(null);
     setD20Result(null);
-    setLastResult(null);
   };
 
-  return (
-    <div className="min-h-dvh bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex flex-col font-sans">
-      <header className="py-4 px-6 shadow-md bg-white dark:bg-gray-800">
-        <div className="container mx-auto flex justify-center items-center">
-          <div className="flex gap-2 p-1 bg-gray-200 dark:bg-gray-700 rounded-lg">
-            <button onClick={() => setGame("coin")} className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${game === 'coin' ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-white shadow' : 'text-gray-600 dark:text-gray-400'}`}>Coin Flip</button>
-            <button onClick={() => setGame("d20")} className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${game === 'd20' ? 'bg-white dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 shadow' : 'text-gray-600 dark:text-gray-400'}`}>D20 Roll</button>
-          </div>
-        </div>
-      </header>
+  const coinScores = [{label: 'Heads', value: score.heads}, {label: 'Tails', value: score.tails}];
+  const d20Scores = Object.entries(score.d20).map(([roll, count]) => ({label: roll, value: count})).sort((a,b) => Number(a.label) - Number(b.label));
 
-      <main className="flex-grow container mx-auto p-6 flex flex-col items-center justify-evenly text-center">
-        <div>
-          <div className="h-56 flex items-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={game}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.3 }}
+  const coinWinningCriteria = (scores: {label: string, value: number}[]) => {
+    const heads = scores.find(s => s.label === 'Heads')?.value || 0;
+    const tails = scores.find(s => s.label === 'Tails')?.value || 0;
+    if (heads === tails && heads > 0) return ['Heads', 'Tails'];
+    if (heads > tails) return ['Heads'];
+    if (tails > heads) return ['Tails'];
+    return [];
+  }
+
+  const d20WinningCriteria = (scores: {label: string, value: number}[]) => {
+    const max = Math.max(...scores.map(s => s.value));
+    if (max === 0) return [];
+    return scores.filter(s => s.value === max).map(s => s.label);
+  }
+
+  // Mobile View
+  const mobileView = (
+    <div className="flex flex-col h-dvh">
+        <header className="py-4 px-6 shadow-md bg-white dark:bg-gray-800">
+          <div className="container mx-auto flex justify-center items-center">
+            <div className="flex gap-2 p-1 bg-gray-200 dark:bg-gray-700 rounded-lg">
+              <button onClick={() => setGame("coin")} className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${game === 'coin' ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-white shadow' : 'text-gray-600 dark:text-gray-400'}`}>Coin Flip</button>
+              <button onClick={() => setGame("d20")} className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${game === 'd20' ? 'bg-white dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 shadow' : 'text-gray-600 dark:text-gray-400'}`}>D20 Roll</button>
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-grow container mx-auto p-6 flex flex-col items-center justify-center text-center">
+          <AnimatePresence mode="wait">
+            <motion.div key={game} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              {game === 'coin' ? (
+                <div className="flex flex-col items-center">
+                  <div className="h-56 flex items-center">
+                    <Coin side={side} animationKey={animationKey} />
+                  </div>
+                  <div className="mt-6 text-xl h-7">
+                    {side && <>Last Flip: <span className="font-bold text-indigo-600">{side}</span></>}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <div className="h-56 flex items-center">
+                    <D20 result={d20Result} animationKey={d20AnimationKey} />
+                  </div>
+                  <div className="mt-6 text-xl h-7">
+                    {d20Result && <>Last Roll: <span className="font-bold text-indigo-600">{d20Result}</span></>}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+
+        <footer className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-t">
+          <div className="container mx-auto w-full max-w-sm">
+              <button
+                  onClick={game === 'coin' ? handleCoinFlip : handleD20Roll}
+                  className="w-full px-8 py-4 mb-3 text-lg font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-md"
               >
-                {game === "coin" ? <Coin side={side} animationKey={animationKey} /> : <D20 result={d20Result} animationKey={animationKey} />}
-              </motion.div>
-            </AnimatePresence>
+                  {game === "coin" ? "Flip Coin" : "Roll D20"}
+              </button>
+              <div className="grid grid-cols-2 gap-3">
+                  <button 
+                      onClick={() => setShowResults(true)} 
+                      disabled={!hasResults}
+                      className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                      View Results
+                  </button>
+                  <button
+                      onClick={clearScore}
+                      disabled={!hasResults}
+                      className="w-full px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                      Clear Score
+                  </button>
+              </div>
           </div>
-          <div className="mt-6 text-xl h-7">
-              {game === 'coin' && side && (
-                  <>Last Flip: <span className="font-bold text-indigo-600">{side}</span></>
-              )}
-              {game === 'd20' && d20Result && (
-                  <>Last Roll: <span className="font-bold text-indigo-600">{d20Result}</span></>
-              )}
-          </div>
-        </div>
-      </main>
+        </footer>
+    </div>
+  );
 
-      <footer className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-t">
-        <div className="container mx-auto w-full max-w-sm">
-            <button
-                onClick={handleAction}
-                className="w-full px-8 py-4 mb-3 text-lg font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-md"
-            >
-                {game === "coin" ? "Flip Coin" : "Roll D20"}
-            </button>
-            <div className="grid grid-cols-2 gap-3">
-                <button 
-                    onClick={() => setShowResults(true)} 
-                    disabled={!hasResults}
-                    className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    View Results
-                </button>
-                <button
-                    onClick={clearScore}
-                    disabled={!hasResults}
-                    className="w-full px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    Clear Score
-                </button>
+  // Desktop View
+  const desktopView = (
+    <div className="h-dvh grid grid-cols-dashboard">
+        <div className="border-r border-gray-200 dark:border-gray-700">
+            <Results title="Coin Flip Results" scores={coinScores} winningCriteria={coinWinningCriteria} />
+        </div>
+        <div className="flex flex-col">
+            <GamePanel 
+                gameType="coin"
+                result={side}
+                animationKey={animationKey}
+                lastResultText={side ? `Last Flip: ${side}` : ''}
+                onAction={handleCoinFlip}
+                actionText="Flip Coin"
+            />
+            <div className="border-t border-gray-200 dark:border-gray-700 flex-grow">
+                <GamePanel 
+                    gameType="d20"
+                    result={d20Result}
+                    animationKey={d20AnimationKey}
+                    lastResultText={d20Result ? `Last Roll: ${d20Result}` : ''}
+                    onAction={handleD20Roll}
+                    actionText="Roll D20"
+                />
             </div>
         </div>
-      </footer>
+        <div className="border-l border-gray-200 dark:border-gray-700">
+            <Results title="D20 Roll Results" scores={d20Scores} winningCriteria={d20WinningCriteria} />
+        </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-dvh bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans">
+      <div className="lg:hidden">
+        {mobileView}
+      </div>
+      <div className="hidden lg:block">
+        {desktopView}
+      </div>
 
       {showResults && (
-        <ResultsOverlay
-          lastResult={lastResult}
-          heads={score.heads}
-          tails={score.tails}
-          d20Scores={score.d20}
-          onClose={() => setShowResults(false)}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 p-4 lg:hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col mx-auto">
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h2 className="text-xl font-bold">Results</h2>
+                    <button onClick={() => setShowResults(false)} className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-3xl leading-none">&times;</button>
+                </div>
+                <div className="p-4">
+                    <div className="mb-4">
+                        <Results title="Coin Flip Results" scores={coinScores} winningCriteria={coinWinningCriteria} />
+                    </div>
+                    <Results title="D20 Roll Results" scores={d20Scores} winningCriteria={d20WinningCriteria} />
+                </div>
+            </div>
+        </div>
       )}
     </div>
   );
