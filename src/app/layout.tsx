@@ -10,7 +10,12 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Coin",
   description: "A coin flip and D20 roll app.",
-  manifest: "/manifest.ts",
+  manifest: "/manifest.json",
+  icons: {
+    apple: [
+      { url: '/coin.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
 };
 
 export const viewport: Viewport = {
@@ -18,6 +23,9 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  // @ts-ignore
+  'apple-mobile-web-app-capable': 'yes',
+  'apple-mobile-web-app-status-bar-style': 'black-translucent',
 };
 
 export default function RootLayout({
@@ -27,10 +35,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/coin.png" />
-      </head>
       <body className={poppins.className}>{children}</body>
     </html>
   );

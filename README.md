@@ -10,7 +10,7 @@ This web app helps you make small decisions quickly by flipping a coin or rollin
 
 Try the app live at [coin.chis.dev](https://coin.chis.dev)
 
-![app](public/example.png)
+![app](public/image.png)
 
 ## Decision-Making Use Case
 
