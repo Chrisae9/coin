@@ -83,30 +83,30 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex-grow container mx-auto p-6 flex flex-col items-center justify-center text-center">
-        <div className="mb-6 h-56 flex items-center">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={game}
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {game === "coin" ? <Coin side={side} animationKey={animationKey} /> : <D20 result={d20Result} animationKey={animationKey} />}
-            </motion.div>
-          </AnimatePresence>
+      <main className="flex-grow container mx-auto p-6 flex flex-col items-center justify-evenly text-center">
+        <div>
+          <div className="h-56 flex items-center">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={game}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {game === "coin" ? <Coin side={side} animationKey={animationKey} /> : <D20 result={d20Result} animationKey={animationKey} />}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <div className="mt-6 text-xl h-7">
+              {game === 'coin' && side && (
+                  <>Last Flip: <span className="font-bold text-indigo-600">{side}</span></>
+              )}
+              {game === 'd20' && d20Result && (
+                  <>Last Roll: <span className="font-bold text-indigo-600">{d20Result}</span></>
+              )}
+          </div>
         </div>
-        {game === 'coin' && side && (
-            <div className="mb-6 text-xl">
-                Last Flip: <span className="font-bold text-indigo-600">{side}</span>
-            </div>
-        )}
-        {game === 'd20' && d20Result && (
-            <div className="mb-6 text-xl">
-                Last Roll: <span className="font-bold text-indigo-600">{d20Result}</span>
-            </div>
-        )}
       </main>
 
       <footer className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-t">
