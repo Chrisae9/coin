@@ -39,6 +39,8 @@ export default function Home() {
   const [animationKey, setAnimationKey] = useState(0);
   const [showResults, setShowResults] = useState(false);
 
+  const hasResults = score.heads > 0 || score.tails > 0 || Object.keys(score.d20).length > 0;
+
   const handleAction = () => {
     setAnimationKey(prev => prev + 1);
     let newResult: "heads" | "tails" | number;
@@ -118,12 +120,17 @@ export default function Home() {
                 {game === "coin" ? "Flip Coin" : "Roll D20"}
             </button>
             <div className="grid grid-cols-2 gap-3">
-                <button onClick={() => setShowResults(true)} className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+                <button 
+                    onClick={() => setShowResults(true)} 
+                    disabled={!hasResults}
+                    className="w-full text-center px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                     View Results
                 </button>
                 <button
                     onClick={clearScore}
-                    className="w-full px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                    disabled={!hasResults}
+                    className="w-full px-4 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     Clear Score
                 </button>
