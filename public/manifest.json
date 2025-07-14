@@ -4,7 +4,7 @@
   "description": "A simple coin flip and D20 roll app.",
   "icons": [
     {
-      "src": "/file.svg",
+      "src": "/coin.png",
       "sizes": "any",
       "type": "image/svg+xml"
     }

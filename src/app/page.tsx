@@ -4,12 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import usePersistentState from "./usePersistentState";
 import Results from "./Results";
-import GamePanel from "./GamePanel";
 
 const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animationKey: number }) => (
   <motion.div
     key={animationKey}
-    className="w-40 h-40 sm:w-56 sm:h-56 rounded-full flex items-center justify-center text-5xl sm:text-6xl font-bold text-gray-800 bg-gray-200 shadow-xl border-4 border-gray-300"
+    className="w-40 h-40 rounded-full flex items-center justify-center text-5xl font-bold text-gray-800 bg-gray-200 shadow-xl border-4 border-gray-300"
     initial={{ rotateY: 0 }}
     animate={{ rotateY: 360 }}
     transition={{ duration: 0.5 }}
@@ -21,7 +20,7 @@ const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animatio
 const D20 = ({ result, animationKey }: { result: number | null, animationKey: number }) => (
   <motion.div
     key={animationKey}
-    className="w-40 h-40 sm:w-56 sm:h-56 flex items-center justify-center text-5xl sm:text-6xl font-bold text-white bg-indigo-600 shadow-xl"
+    className="w-40 h-40 flex items-center justify-center text-5xl font-bold text-white bg-indigo-600 shadow-xl"
     style={{ clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)' }}
     initial={{ scale: 0, rotate: -15 }}
     animate={{ scale: 1, rotate: 0 }}
@@ -70,6 +69,16 @@ export default function Home() {
   const clearScore = () => {
     setScore({ heads: 0, tails: 0, d20: {} });
     setSide(null);
+    setD20Result(null);
+  };
+
+  const clearCoinScore = () => {
+    setScore((prev) => ({ ...prev, heads: 0, tails: 0 }));
+    setSide(null);
+  };
+
+  const clearD20Score = () => {
+    setScore((prev) => ({ ...prev, d20: {} }));
     setD20Result(null);
   };
 
@@ -162,42 +171,67 @@ export default function Home() {
 
   // Desktop View
   const desktopView = (
-    <div className="h-dvh grid grid-cols-dashboard">
-        <div className="border-r border-gray-200 dark:border-gray-700">
-            <Results title="Coin Flips" scores={coinScores} winningCriteria={coinWinningCriteria} total={totalFlips} />
+    <div className="h-dvh flex flex-col bg-gray-100 dark:bg-gray-800">
+      <header className="py-4 px-8 shadow-md bg-white dark:bg-gray-900 z-10">
+        <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-white">Dashboard</h1>
+      </header>
+
+      <main className="flex-grow p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Coin Flip Section */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl flex flex-col p-6 items-center justify-between">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Coin Flip</h2>
+          <div className="flex-grow flex items-center justify-center">
+            <Coin side={side} animationKey={animationKey} />
+          </div>
+          <div className="text-xl h-7 my-4">
+            {side && <>Last Flip: <span className="font-bold text-indigo-400">{side}</span></>}
+          </div>
+          <button
+            onClick={handleCoinFlip}
+            className="w-full px-6 py-3 text-lg font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+          >
+            Flip Coin
+          </button>
         </div>
-        <div className="flex flex-col">
-            <div className="flex-grow grid grid-cols-2 gap-4 p-4">
-                <GamePanel 
-                    gameType="coin"
-                    result={side}
-                    animationKey={animationKey}
-                    lastResultText={side ? `Last Flip: ${side}` : ''}
-                    onAction={handleCoinFlip}
-                    actionText="Flip Coin"
-                />
-                <GamePanel 
-                    gameType="d20"
-                    result={d20Result}
-                    animationKey={d20AnimationKey}
-                    lastResultText={d20Result ? `Last Roll: ${d20Result}` : ''}
-                    onAction={handleD20Roll}
-                    actionText="Roll D20"
-                />
+
+        {/* D20 Roll Section */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl flex flex-col p-6 items-center justify-between">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">D20 Roll</h2>
+          <div className="flex-grow flex items-center justify-center">
+            <D20 result={d20Result} animationKey={d20AnimationKey} />
+          </div>
+          <div className="text-xl h-7 my-4">
+            {d20Result && <>Last Roll: <span className="font-bold text-indigo-400">{d20Result}</span></>}
+          </div>
+          <button
+            onClick={handleD20Roll}
+            className="w-full px-6 py-3 text-lg font-bold text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors shadow-md"
+          >
+            Roll D20
+          </button>
+        </div>
+
+        {/* Results Section */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl flex flex-col p-6">
+          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Results</h2>
+          <div className="flex-grow flex flex-col justify-around">
+            <div className="flex-1 pb-2">
+              <Results title="Coin Flips" scores={coinScores} winningCriteria={coinWinningCriteria} total={totalFlips} />
             </div>
-            <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex justify-center">
-                <button
-                    onClick={clearScore}
-                    disabled={!hasResults}
-                    className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    Clear All Scores
-                </button>
+            <div className="border-t border-gray-200 dark:border-gray-700 my-4"></div>
+            <div className="flex-1 pt-2">
+              <Results title="D20 Rolls" scores={d20Scores} winningCriteria={d20WinningCriteria} total={totalRolls} />
             </div>
+          </div>
+          <button
+            onClick={clearScore}
+            disabled={!hasResults}
+            className="mt-6 w-full px-6 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 disabled:opacity-50"
+          >
+            Clear All Scores
+          </button>
         </div>
-        <div className="border-l border-gray-200 dark:border-gray-700">
-            <Results title="D20 Rolls" scores={d20Scores} winningCriteria={d20WinningCriteria} total={totalRolls} />
-        </div>
+      </main>
     </div>
   );
 
