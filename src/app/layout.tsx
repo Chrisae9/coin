@@ -29,6 +29,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/coin.png" />
       </head>
       <body className={poppins.className}>{children}</body>
     </html>
