@@ -5,6 +5,7 @@
 
 This web app helps you make small decisions quickly by flipping a coin or rolling a 20-sided die (D20). Sometimes, making a choice within a certain time frame is more important than the choice itself. This tool is designed for those moments when you just need to decide and move forward.
 
+![app](public/example.png)
 
 # Live Demo
 
