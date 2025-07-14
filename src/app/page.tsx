@@ -8,7 +8,7 @@ import ResultsOverlay from "./ResultsOverlay";
 const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animationKey: number }) => (
   <motion.div
     key={animationKey}
-    className="w-48 h-48 sm:w-64 sm:h-64 rounded-full flex items-center justify-center text-6xl sm:text-7xl font-bold text-gray-800 bg-gray-200 shadow-xl border-4 border-gray-300"
+    className="w-40 h-40 sm:w-56 sm:h-56 rounded-full flex items-center justify-center text-5xl sm:text-6xl font-bold text-gray-800 bg-gray-200 shadow-xl border-4 border-gray-300"
     initial={{ rotateY: 0 }}
     animate={{ rotateY: 360 }}
     transition={{ duration: 0.5 }}
@@ -20,7 +20,7 @@ const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animatio
 const D20 = ({ result, animationKey }: { result: number | null, animationKey: number }) => (
   <motion.div
     key={animationKey}
-    className="w-48 h-48 sm:w-64 sm:h-64 flex items-center justify-center text-6xl sm:text-7xl font-bold text-white bg-indigo-600 shadow-xl"
+    className="w-40 h-40 sm:w-56 sm:h-56 flex items-center justify-center text-5xl sm:text-6xl font-bold text-white bg-indigo-600 shadow-xl"
     style={{ clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)' }}
     initial={{ scale: 0, rotate: -15 }}
     animate={{ scale: 1, rotate: 0 }}
@@ -68,7 +68,6 @@ export default function Home() {
     <div className="min-h-dvh bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex flex-col font-sans">
       <header className="py-4 px-6 shadow-md bg-white dark:bg-gray-800">
         <div className="container mx-auto flex justify-center items-center">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white mr-6">Game Mode</h1>
           <div className="flex gap-2 p-1 bg-gray-200 dark:bg-gray-700 rounded-lg">
             <button onClick={() => setGame("coin")} className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${game === 'coin' ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-white shadow' : 'text-gray-600 dark:text-gray-400'}`}>Coin Flip</button>
             <button onClick={() => setGame("d20")} className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${game === 'd20' ? 'bg-white dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 shadow' : 'text-gray-600 dark:text-gray-400'}`}>D20 Roll</button>
@@ -77,7 +76,7 @@ export default function Home() {
       </header>
 
       <main className="flex-grow container mx-auto p-6 flex flex-col items-center justify-center text-center">
-        <div className="mb-6 h-64 flex items-center">
+        <div className="mb-6 h-56 flex items-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={game}
