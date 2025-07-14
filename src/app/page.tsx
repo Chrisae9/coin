@@ -32,9 +32,9 @@ const D20 = ({ result, animationKey }: { result: number | null, animationKey: nu
 
 export default function Home() {
   const [game, setGame] = usePersistentState<"coin" | "d20">('game', "coin");
-  const [side, setSide] = usePersistentState<"heads" | "tails" | null>('side', null);
-  const [d20Result, setD20Result] = usePersistentState<number | null>('d20Result', null);
-  const [lastResult, setLastResult] = usePersistentState<string | number | null>('lastResult', null);
+  const [side, setSide] = useState<"heads" | "tails" | null>(null);
+  const [d20Result, setD20Result] = useState<number | null>(null);
+  const [lastResult, setLastResult] = useState<string | number | null>(null);
   const [score, setScore] = usePersistentState<{ heads: number; tails: number; d20: Record<number, number> }>('score', { heads: 0, tails: 0, d20: {} });
   const [animationKey, setAnimationKey] = useState(0);
   const [showResults, setShowResults] = useState(false);
