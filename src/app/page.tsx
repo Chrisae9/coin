@@ -72,16 +72,6 @@ export default function Home() {
     setD20Result(null);
   };
 
-  const clearCoinScore = () => {
-    setScore((prev) => ({ ...prev, heads: 0, tails: 0 }));
-    setSide(null);
-  };
-
-  const clearD20Score = () => {
-    setScore((prev) => ({ ...prev, d20: {} }));
-    setD20Result(null);
-  };
-
   const coinScores = [{label: 'Heads', value: score.heads}, {label: 'Tails', value: score.tails}];
   const d20Scores = Object.entries(score.d20).map(([roll, count]) => ({label: roll, value: count})).sort((a,b) => Number(a.label) - Number(b.label));
 
