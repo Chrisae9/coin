@@ -4,9 +4,10 @@ interface ResultsProps {
   title: string;
   scores: { label: string; value: number }[];
   winningCriteria: (scores: { label: string; value: number }[]) => string[];
+  total?: number;
 }
 
-export default function Results({ title, scores, winningCriteria }: ResultsProps) {
+export default function Results({ title, scores, winningCriteria, total }: ResultsProps) {
   const winningLabels = winningCriteria(scores);
   const maxCount = scores.length > 0 ? Math.max(...scores.map(s => s.value)) : 0;
 
@@ -25,31 +26,46 @@ export default function Results({ title, scores, winningCriteria }: ResultsProps
 
   const isBarChart = scores.length > 2;
 
+  const d20ScoresMap = new Map(scores.map(s => [s.label, s.value]));
+  const allD20Rolls = Array.from({ length: 20 }, (_, i) => String(i + 1));
+
   return (
     <div className="h-full flex flex-col bg-white dark:bg-gray-800">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-bold text-center">{title}</h2>
-      </div>
-      <div className="p-4 overflow-y-auto flex-grow">
+        <div className="flex justify-between items-baseline px-4 pt-4 pb-2">
+            <h3 className="text-lg font-bold">{title}</h3>
+            {total !== undefined && <p className="text-sm text-gray-500 dark:text-gray-400">Total: <span className="font-bold">{total}</span></p>}
+        </div>
+      <div className="px-4 pb-4 overflow-y-auto flex-grow">
         {scores.every(s => s.value === 0) ? (
             <div className="flex-grow flex items-center justify-center h-full">
                 <p className="text-gray-500">No results yet!</p>
             </div>
         ) : isBarChart ? (
-          <div className="space-y-2">
-            {scores.map(({ label, value }) => (
-              <div key={label} className={`flex items-center gap-2 p-1 rounded-md transition-colors duration-300 ${getHighlightClass(label)}`}>
-                <span className="font-mono text-xs text-gray-500 dark:text-gray-400 w-5 text-right">{label}</span>
-                <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-5">
-                  <div
-                    className="bg-indigo-600 dark:bg-indigo-500 h-5 rounded-full flex items-center justify-end px-1.5"
-                    style={{ width: `${(value / maxCount) * 100}%` }}
-                  >
-                    <span className="text-white text-[10px] font-bold">{value}</span>
+          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+            {allD20Rolls.map(label => {
+              const value = d20ScoresMap.get(label) || 0;
+              if (value === 0) {
+                return (
+                  <div key={label} className="flex items-center gap-1 p-0.5 rounded-md">
+                    <span className="font-mono text-xs text-gray-500 dark:text-gray-400 w-5 text-right">{label}</span>
+                    <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-4"></div>
+                  </div>
+                )
+              }
+              return (
+                <div key={label} className={`flex items-center gap-1 p-0.5 rounded-md transition-colors duration-300 ${getHighlightClass(label)}`}>
+                  <span className="font-mono text-xs text-gray-500 dark:text-gray-400 w-5 text-right">{label}</span>
+                  <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-4">
+                    <div
+                      className="bg-indigo-600 dark:bg-indigo-500 h-4 rounded-full flex items-center justify-end px-1.5"
+                      style={{ width: `${(value / maxCount) * 100}%` }}
+                    >
+                      <span className="text-white text-[10px] font-bold">{value}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         ) : (
           <div className="flex justify-around gap-4">

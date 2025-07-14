@@ -42,6 +42,9 @@ export default function Home() {
 
   const hasResults = score.heads > 0 || score.tails > 0 || Object.keys(score.d20).length > 0;
 
+  const totalFlips = score.heads + score.tails;
+  const totalRolls = Object.values(score.d20).reduce((a, b) => a + b, 0);
+
   const handleCoinFlip = () => {
     setAnimationKey(prev => prev + 1);
     const randomBuffer = new Uint8Array(1);
@@ -83,9 +86,11 @@ export default function Home() {
   }
 
   const d20WinningCriteria = (scores: {label: string, value: number}[]) => {
-    const max = Math.max(...scores.map(s => s.value));
+    const filteredScores = scores.filter(s => s.value > 0);
+    if (filteredScores.length === 0) return [];
+    const max = Math.max(...filteredScores.map(s => s.value));
     if (max === 0) return [];
-    return scores.filter(s => s.value === max).map(s => s.label);
+    return filteredScores.filter(s => s.value === max).map(s => s.label);
   }
 
   // Mobile View
@@ -109,7 +114,7 @@ export default function Home() {
                     <Coin side={side} animationKey={animationKey} />
                   </div>
                   <div className="mt-6 text-xl h-7">
-                    {side && <>Last Flip: <span className="font-bold text-indigo-600">{side}</span></>}
+                    {side && <>Last Flip: <span className="font-bold text-indigo-400">{side}</span></>}
                   </div>
                 </div>
               ) : (
@@ -118,7 +123,7 @@ export default function Home() {
                     <D20 result={d20Result} animationKey={d20AnimationKey} />
                   </div>
                   <div className="mt-6 text-xl h-7">
-                    {d20Result && <>Last Roll: <span className="font-bold text-indigo-600">{d20Result}</span></>}
+                    {d20Result && <>Last Roll: <span className="font-bold text-indigo-400">{d20Result}</span></>}
                   </div>
                 </div>
               )}
@@ -159,18 +164,18 @@ export default function Home() {
   const desktopView = (
     <div className="h-dvh grid grid-cols-dashboard">
         <div className="border-r border-gray-200 dark:border-gray-700">
-            <Results title="Coin Flip Results" scores={coinScores} winningCriteria={coinWinningCriteria} />
+            <Results title="Coin Flips" scores={coinScores} winningCriteria={coinWinningCriteria} total={totalFlips} />
         </div>
         <div className="flex flex-col">
-            <GamePanel 
-                gameType="coin"
-                result={side}
-                animationKey={animationKey}
-                lastResultText={side ? `Last Flip: ${side}` : ''}
-                onAction={handleCoinFlip}
-                actionText="Flip Coin"
-            />
-            <div className="border-t border-gray-200 dark:border-gray-700 flex-grow">
+            <div className="flex-grow grid grid-cols-2 gap-4 p-4">
+                <GamePanel 
+                    gameType="coin"
+                    result={side}
+                    animationKey={animationKey}
+                    lastResultText={side ? `Last Flip: ${side}` : ''}
+                    onAction={handleCoinFlip}
+                    actionText="Flip Coin"
+                />
                 <GamePanel 
                     gameType="d20"
                     result={d20Result}
@@ -180,9 +185,18 @@ export default function Home() {
                     actionText="Roll D20"
                 />
             </div>
+            <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex justify-center">
+                <button
+                    onClick={clearScore}
+                    disabled={!hasResults}
+                    className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    Clear All Scores
+                </button>
+            </div>
         </div>
         <div className="border-l border-gray-200 dark:border-gray-700">
-            <Results title="D20 Roll Results" scores={d20Scores} winningCriteria={d20WinningCriteria} />
+            <Results title="D20 Rolls" scores={d20Scores} winningCriteria={d20WinningCriteria} total={totalRolls} />
         </div>
     </div>
   );
@@ -197,17 +211,21 @@ export default function Home() {
       </div>
 
       {showResults && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 p-4 lg:hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 p-4 flex items-center justify-center lg:hidden">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col mx-auto">
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                     <h2 className="text-xl font-bold">Results</h2>
-                    <button onClick={() => setShowResults(false)} className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-3xl leading-none">&times;</button>
                 </div>
-                <div className="p-4">
+                <div className="p-4 overflow-y-auto">
                     <div className="mb-4">
-                        <Results title="Coin Flip Results" scores={coinScores} winningCriteria={coinWinningCriteria} />
+                        <Results title="Coin Flips" scores={coinScores} winningCriteria={coinWinningCriteria} total={totalFlips} />
                     </div>
-                    <Results title="D20 Roll Results" scores={d20Scores} winningCriteria={d20WinningCriteria} />
+                    <Results title="D20 Rolls" scores={d20Scores} winningCriteria={d20WinningCriteria} total={totalRolls} />
+                </div>
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                    <button onClick={() => setShowResults(false)} className="w-full px-4 py-3 text-lg font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors">
+                        Back to Game
+                    </button>
                 </div>
             </div>
         </div>
