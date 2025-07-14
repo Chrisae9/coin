@@ -20,7 +20,7 @@ const Coin = ({ side, animationKey }: { side: "heads" | "tails" | null, animatio
 const D20 = ({ result, animationKey }: { result: number | null, animationKey: number }) => (
   <motion.div
     key={animationKey}
-    className="w-40 h-40 flex items-center justify-center text-5xl font-bold text-white bg-indigo-600 shadow-xl"
+    className="w-40 h-40 flex items-center justify-center text-5xl font-bold text-white bg-blue-600 shadow-xl"
     style={{ clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)' }}
     initial={{ scale: 0, rotate: -15 }}
     animate={{ scale: 1, rotate: 0 }}
@@ -109,7 +109,7 @@ export default function Home() {
           <div className="container mx-auto flex justify-center items-center">
             <div className="flex gap-2 p-1 bg-gray-200 dark:bg-gray-700 rounded-lg">
               <button onClick={() => setGame("coin")} className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${game === 'coin' ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-white shadow' : 'text-gray-600 dark:text-gray-400'}`}>Coin Flip</button>
-              <button onClick={() => setGame("d20")} className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${game === 'd20' ? 'bg-white dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 shadow' : 'text-gray-600 dark:text-gray-400'}`}>D20 Roll</button>
+              <button onClick={() => setGame("d20")} className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${game === 'd20' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow' : 'text-gray-600 dark:text-gray-400'}`}>D20 Roll</button>
             </div>
           </div>
         </header>
@@ -122,17 +122,11 @@ export default function Home() {
                   <div className="h-56 flex items-center">
                     <Coin side={side} animationKey={animationKey} />
                   </div>
-                  <div className="mt-6 text-xl h-7">
-                    {side && <>Last Flip: <span className="font-bold text-indigo-400">{side}</span></>}
-                  </div>
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
                   <div className="h-56 flex items-center">
                     <D20 result={d20Result} animationKey={d20AnimationKey} />
-                  </div>
-                  <div className="mt-6 text-xl h-7">
-                    {d20Result && <>Last Roll: <span className="font-bold text-indigo-400">{d20Result}</span></>}
                   </div>
                 </div>
               )}
@@ -144,7 +138,7 @@ export default function Home() {
           <div className="container mx-auto w-full max-w-sm">
               <button
                   onClick={game === 'coin' ? handleCoinFlip : handleD20Roll}
-                  className="w-full px-8 py-4 mb-3 text-lg font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-md"
+                  className="w-full px-8 py-4 mb-3 text-lg font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-md"
               >
                   {game === "coin" ? "Flip Coin" : "Roll D20"}
               </button>
@@ -172,23 +166,16 @@ export default function Home() {
   // Desktop View
   const desktopView = (
     <div className="h-dvh flex flex-col bg-gray-100 dark:bg-gray-800">
-      <header className="py-4 px-8 shadow-md bg-white dark:bg-gray-900 z-10">
-        <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-white">Dashboard</h1>
-      </header>
-
-      <main className="flex-grow p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="flex-grow p-8 grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
         {/* Coin Flip Section */}
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl flex flex-col p-6 items-center justify-between">
           <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Coin Flip</h2>
           <div className="flex-grow flex items-center justify-center">
             <Coin side={side} animationKey={animationKey} />
           </div>
-          <div className="text-xl h-7 my-4">
-            {side && <>Last Flip: <span className="font-bold text-indigo-400">{side}</span></>}
-          </div>
           <button
             onClick={handleCoinFlip}
-            className="w-full px-6 py-3 text-lg font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+            className="w-full px-6 py-3 text-lg font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-md mt-4"
           >
             Flip Coin
           </button>
@@ -200,12 +187,9 @@ export default function Home() {
           <div className="flex-grow flex items-center justify-center">
             <D20 result={d20Result} animationKey={d20AnimationKey} />
           </div>
-          <div className="text-xl h-7 my-4">
-            {d20Result && <>Last Roll: <span className="font-bold text-indigo-400">{d20Result}</span></>}
-          </div>
           <button
             onClick={handleD20Roll}
-            className="w-full px-6 py-3 text-lg font-bold text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors shadow-md"
+            className="w-full px-6 py-3 text-lg font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-md mt-4"
           >
             Roll D20
           </button>
@@ -257,7 +241,7 @@ export default function Home() {
                     <Results title="D20 Rolls" scores={d20Scores} winningCriteria={d20WinningCriteria} total={totalRolls} />
                 </div>
                 <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-                    <button onClick={() => setShowResults(false)} className="w-full px-4 py-3 text-lg font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors">
+                    <button onClick={() => setShowResults(false)} className="w-full px-4 py-3 text-lg font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
                         Back to Game
                     </button>
                 </div>
