@@ -1,15 +1,16 @@
 
 
 
+
 # Coin Flip and D20 Roll App
 
 This web app helps you make small decisions quickly by flipping a coin or rolling a 20-sided die (D20). Sometimes, making a choice within a certain time frame is more important than the choice itself. This tool is designed for those moments when you just need to decide and move forward.
 
-![app](public/example.png)
-
 # Live Demo
 
 Try the app live at [coin.chis.dev](https://coin.chis.dev)
+
+![app](public/example.png)
 
 ## Decision-Making Use Case
 
