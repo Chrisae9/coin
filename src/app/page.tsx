@@ -65,7 +65,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex flex-col font-sans">
+    <div className="min-h-dvh bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex flex-col font-sans">
       <header className="py-4 px-6 shadow-md bg-white dark:bg-gray-800">
         <div className="container mx-auto flex justify-center items-center">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mr-6">Game Mode</h1>
@@ -102,7 +102,7 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="p-6 bg-white dark:bg-gray-800 shadow-t">
+      <footer className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-t">
         <div className="container mx-auto w-full max-w-sm">
             <button
                 onClick={handleAction}
