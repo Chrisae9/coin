@@ -44,12 +44,20 @@ export default function Home() {
     let newResult: "heads" | "tails" | number;
 
     if (game === 'coin') {
-      const newSide = Math.random() > 0.5 ? "heads" : "tails";
+      const randomBuffer = new Uint8Array(1);
+      window.crypto.getRandomValues(randomBuffer);
+      const newSide = randomBuffer[0] < 128 ? "heads" : "tails";
       setSide(newSide);
       newResult = newSide;
       setScore((prev) => ({ ...prev, [newSide]: prev[newSide] + 1 }));
     } else {
-      const newD20Result = Math.floor(Math.random() * 20) + 1;
+      const randomValues = new Uint8Array(1);
+      let randomByte;
+      do {
+        window.crypto.getRandomValues(randomValues);
+        randomByte = randomValues[0];
+      } while (randomByte >= 240);
+      const newD20Result = (randomByte % 20) + 1;
       setD20Result(newD20Result);
       newResult = newD20Result;
       setScore((prev) => ({ ...prev, d20: { ...prev.d20, [newD20Result]: (prev.d20[newD20Result] || 0) + 1 } }));
