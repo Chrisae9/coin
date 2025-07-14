@@ -11,6 +11,24 @@ interface ResultsOverlayProps {
 export default function ResultsOverlay({ lastResult, heads, tails, d20Scores, onClose }: ResultsOverlayProps) {
   const sortedD20Scores: [string, number][] = Object.entries(d20Scores).sort(([a], [b]) => Number(a) - Number(b));
   const maxD20Count = sortedD20Scores.length > 0 ? Math.max(...sortedD20Scores.map(([, count]) => count)) : 0;
+  const winningD20Rolls = sortedD20Scores.filter(([, count]) => count === maxD20Count).map(([roll]) => roll);
+
+  const getCoinHighlightClass = (side: 'heads' | 'tails') => {
+    if (heads === tails && heads > 0) return 'bg-yellow-200 dark:bg-yellow-700/50';
+    if (side === 'heads' && heads > tails) return 'bg-green-200 dark:bg-green-700/50';
+    if (side === 'tails' && tails > heads) return 'bg-green-200 dark:bg-green-700/50';
+    return 'bg-gray-100 dark:bg-gray-700';
+  };
+
+  const getD20HighlightClass = (roll: string) => {
+    if (winningD20Rolls.length > 1 && winningD20Rolls.includes(roll)) {
+      return 'bg-yellow-200 dark:bg-yellow-700/50';
+    }
+    if (winningD20Rolls.length === 1 && winningD20Rolls[0] === roll) {
+      return 'bg-green-200 dark:bg-green-700/50';
+    }
+    return '';
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
@@ -32,11 +50,11 @@ export default function ResultsOverlay({ lastResult, heads, tails, d20Scores, on
             <div className="mb-4">
               <h4 className="text-base font-semibold mb-2 text-center">Coin Flips</h4>
               <div className="flex justify-around gap-4">
-                <div className="flex flex-col items-center p-3 rounded-lg bg-gray-100 dark:bg-gray-700 w-full">
+                <div className={`flex flex-col items-center p-3 rounded-lg w-full transition-colors duration-300 ${getCoinHighlightClass('heads')}`}>
                   <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{heads}</span>
                   <span className="text-xs text-gray-600 dark:text-gray-300 mt-1">Heads</span>
                 </div>
-                <div className="flex flex-col items-center p-3 rounded-lg bg-gray-100 dark:bg-gray-700 w-full">
+                <div className={`flex flex-col items-center p-3 rounded-lg w-full transition-colors duration-300 ${getCoinHighlightClass('tails')}`}>
                   <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{tails}</span>
                   <span className="text-xs text-gray-600 dark:text-gray-300 mt-1">Tails</span>
                 </div>
@@ -49,7 +67,7 @@ export default function ResultsOverlay({ lastResult, heads, tails, d20Scores, on
               <h4 className="text-base font-semibold mb-3 text-center">D20 Roll Distribution</h4>
               <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                 {sortedD20Scores.map(([roll, count]) => (
-                  <div key={roll} className="flex items-center gap-2">
+                  <div key={roll} className={`flex items-center gap-2 p-1 rounded-md transition-colors duration-300 ${getD20HighlightClass(roll)}`}>
                     <span className="font-mono text-xs text-gray-500 dark:text-gray-400 w-5 text-right">{roll}</span>
                     <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-5">
                       <div 
