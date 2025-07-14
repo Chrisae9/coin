@@ -36,11 +36,7 @@ export default function Results({ title, scores, winningCriteria, total }: Resul
             {total !== undefined && <p className="text-sm text-gray-500 dark:text-gray-400">Total: <span className="font-bold">{total}</span></p>}
         </div>
       <div className="px-4 pb-4 overflow-y-auto flex-grow">
-        {scores.every(s => s.value === 0) ? (
-            <div className="flex-grow flex items-center justify-center h-full">
-                <p className="text-gray-500">No results yet!</p>
-            </div>
-        ) : isBarChart ? (
+        {isBarChart ? (
           <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
             {allD20Rolls.map(label => {
               const value = d20ScoresMap.get(label) || 0;
@@ -58,9 +54,9 @@ export default function Results({ title, scores, winningCriteria, total }: Resul
                   <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-4">
                     <div
                       className="bg-indigo-600 dark:bg-indigo-500 h-4 rounded-full flex items-center justify-end px-1.5"
-                      style={{ width: `${(value / maxCount) * 100}%` }}
+                      style={{ width: `${(value / (maxCount || 1)) * 100}%` }}
                     >
-                      <span className="text-white text-[10px] font-bold">{value}</span>
+                      <span className="text-white text-[10px] font-bold">{value > 0 ? value : ''}</span>
                     </div>
                   </div>
                 </div>
